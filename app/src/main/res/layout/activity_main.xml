@@ -11,9 +11,11 @@
         android:id="@+id/textView1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="24dp"
-        android:layout_marginBottom="24dp"
-        android:text="TextView"
+        android:layout_marginStart="20dp"
+        android:layout_marginBottom="20dp"
+        android:text="Shabalin E.K."
+        android:textColor="@android:color/darker_gray"
+        android:textSize="20sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
@@ -21,44 +23,179 @@
         android:id="@+id/textView2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
-        android:layout_marginEnd="24dp"
-        android:text="TextView"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="20dp"
+        android:text="T-433901-IST"
+        android:textColor="@android:color/holo_red_dark"
+        android:textSize="20sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <ImageView
-        android:id="@+id/imageView"
-        android:layout_width="275dp"
-        android:layout_height="250dp"
-        android:layout_marginStart="99dp"
-        android:layout_marginEnd="100dp"
-        android:layout_marginBottom="240dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.492"
-        app:layout_constraintStart_toStartOf="parent"
-        app:srcCompat="@drawable/btr" />
-
-    <Button
-        android:id="@+id/button"
-        android:layout_width="wrap_content"
+    <!-- Сетка верхних элементов (поля ввода и символы) -->
+    <androidx.gridlayout.widget.GridLayout
+        android:id="@+id/gridLayoutOperations"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="24dp"
-        android:layout_marginBottom="24dp"
-        android:text="Button"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
-
-    <ImageButton
-        android:id="@+id/imageButton1"
-        android:layout_width="90dp"
-        android:layout_height="50dp"
-        android:layout_marginEnd="24dp"
-        android:layout_marginBottom="7dp"
-        android:scaleType="centerInside"
-        app:layout_constraintBottom_toTopOf="@+id/button"
+        android:layout_marginStart="15dp"
+        android:layout_marginTop="60dp"
+        android:layout_marginEnd="15dp"
+        app:alignmentMode="alignMargins"
+        app:columnCount="5"
         app:layout_constraintEnd_toEndOf="parent"
-        app:srcCompat="@drawable/inv" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:rowCount="1">
+
+        <EditText
+            android:id="@+id/editTextNumber1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:inputType="number|numberDecimal|numberSigned"
+            android:textSize="20sp"
+            app:layout_column="0"
+            app:layout_columnWeight="1"
+            app:layout_gravity="fill_horizontal|center_vertical"
+            app:layout_row="0" />
+
+        <TextView
+            android:id="@+id/textViewOperation"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="~"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            app:layout_column="1"
+            app:layout_columnWeight="1"
+            app:layout_gravity="fill_horizontal|center_vertical"
+            app:layout_row="0" />
+
+        <EditText
+            android:id="@+id/editTextNumber2"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:inputType="number|numberDecimal|numberSigned"
+            android:textSize="20sp"
+            app:layout_column="2"
+            app:layout_columnWeight="1"
+            app:layout_gravity="fill_horizontal|center_vertical"
+            app:layout_row="0" />
+
+        <TextView
+            android:id="@+id/textViewEquals"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="="
+            android:textSize="20sp"
+            android:textStyle="bold"
+            app:layout_column="3"
+            app:layout_columnWeight="1"
+            app:layout_gravity="fill_horizontal|center_vertical"
+            app:layout_row="0" />
+
+        <TextView
+            android:id="@+id/textViewResult"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="0"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            app:layout_column="4"
+            app:layout_columnWeight="1"
+            app:layout_gravity="fill_horizontal|center_vertical"
+            app:layout_row="0" />
+    </androidx.gridlayout.widget.GridLayout>
+
+    <!-- Сетка кнопок управления -->
+    <androidx.gridlayout.widget.GridLayout
+        android:id="@+id/gridLayoutButtons"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="15dp"
+        android:layout_marginTop="30dp"
+        android:layout_marginEnd="15dp"
+        app:columnCount="3"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/gridLayoutOperations"
+        app:rowCount="3">
+
+        <Button
+            android:id="@+id/buttonPlus"
+            style="@style/Widget.AppCompat.Button"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_margin="3dp"
+            android:text="+"
+            android:textSize="20sp"
+            app:layout_column="0"
+            app:layout_columnWeight="1"
+            app:layout_gravity="fill"
+            app:layout_row="0"
+            app:layout_rowSpan="2"
+            app:layout_rowWeight="2" />
+
+        <Button
+            android:id="@+id/buttonMinus"
+            style="@style/Widget.AppCompat.Button"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="3dp"
+            android:text="–"
+            android:textSize="20sp"
+            app:layout_column="1"
+            app:layout_columnWeight="1"
+            app:layout_gravity="fill"
+            app:layout_row="0"
+            app:layout_rowWeight="1" />
+
+        <Button
+            android:id="@+id/buttonDivide"
+            style="@style/Widget.AppCompat.Button"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="3dp"
+            android:text="/"
+            android:textSize="20sp"
+            app:layout_column="2"
+            app:layout_columnWeight="1"
+            app:layout_gravity="fill"
+            app:layout_row="0"
+            app:layout_rowWeight="1" />
+
+        <Button
+            android:id="@+id/buttonMultiply"
+            style="@style/Widget.AppCompat.Button"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="3dp"
+            android:text="*"
+            android:textSize="20sp"
+            app:layout_column="1"
+            app:layout_columnSpan="2"
+            app:layout_columnWeight="2"
+            app:layout_gravity="fill"
+            app:layout_row="1"
+            app:layout_rowWeight="1" />
+
+        <Button
+            android:id="@+id/buttonClear"
+            style="@style/Widget.AppCompat.Button"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="3dp"
+            android:text="C"
+            android:textSize="20sp"
+            app:layout_column="0"
+            app:layout_columnSpan="3"
+            app:layout_columnWeight="3"
+            app:layout_gravity="fill"
+            app:layout_row="2"
+            app:layout_rowWeight="1" />
+    </androidx.gridlayout.widget.GridLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -3,8 +3,7 @@ package com.example.task_app_android;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.widget.Button;
-import android.widget.ImageButton;
-import android.widget.ImageView;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
@@ -14,6 +13,11 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 public class MainActivity extends AppCompatActivity {
+
+    private EditText firstNumber;
+    private EditText secondNumber;
+    private TextView operationData;
+    private TextView resultData;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,9 +32,17 @@ public class MainActivity extends AppCompatActivity {
 
         TextView studentData = findViewById(R.id.textView1);
         TextView groupData = findViewById(R.id.textView2);
-        ImageView imageView = findViewById(R.id.imageView);
-        Button buttonHideInfo = findViewById(R.id.button);
-        ImageButton imageButtonHide = findViewById(R.id.imageButton1);
+        firstNumber = findViewById(R.id.editTextNumber1);
+        secondNumber = findViewById(R.id.editTextNumber2);
+        operationData = findViewById(R.id.textViewOperation);
+        TextView equalsData = findViewById(R.id.textViewEquals);
+        resultData = findViewById(R.id.textViewResult);
+
+        Button plusButton = findViewById(R.id.buttonPlus);
+        Button minusButton = findViewById(R.id.buttonMinus);
+        Button multiplyButton = findViewById(R.id.buttonMultiply);
+        Button divideButton = findViewById(R.id.buttonDivide);
+        Button clearButton = findViewById(R.id.buttonClear);
 
         studentData.setText("Shabalin E.K.");
         studentData.setTextSize(20);
@@ -40,29 +52,69 @@ public class MainActivity extends AppCompatActivity {
         groupData.setTextSize(20);
         groupData.setTextColor(Color.RED);
 
-        imageView.setImageResource(R.drawable.btr);
-        imageView.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+        plusButton.setOnClickListener(v -> calculate('+'));
+        minusButton.setOnClickListener(v -> calculate('-'));
+        multiplyButton.setOnClickListener(v -> calculate('*'));
+        divideButton.setOnClickListener(v -> calculate('/'));
+        clearButton.setOnClickListener(v -> clearAll());
+    }
 
-        buttonHideInfo.setText("Hide INFO");
-        buttonHideInfo.setTextSize(20);
-        buttonHideInfo.setOnClickListener(v -> {
-            if (studentData.getVisibility() == TextView.VISIBLE) {
-                studentData.setVisibility(TextView.INVISIBLE);
-                groupData.setVisibility(TextView.INVISIBLE);
-            }
-            else {
-                studentData.setVisibility(TextView.VISIBLE);
-                groupData.setVisibility(TextView.VISIBLE);
-            }
-        });
+    private void calculate(char operation) {
+        operationData.setText(String.valueOf(operation));
 
-        imageButtonHide.setImageResource(R.drawable.inv);
-        imageButtonHide.setScaleType(ImageButton.ScaleType.CENTER_INSIDE);
-        imageButtonHide.setOnClickListener(v -> {
-            if (imageView.getVisibility() == ImageView.VISIBLE)
-                imageView.setVisibility(ImageView.INVISIBLE);
-            else
-                imageView.setVisibility(ImageView.VISIBLE);
-        });
+        String number1 = firstNumber.getText().toString().trim();
+        String number2 = secondNumber.getText().toString().trim();
+
+        if (number1.isEmpty() || number2.isEmpty()) {
+            resultData.setText("Ошибка");
+            return;
+        }
+
+        try {
+            double num1 = Double.parseDouble(number1);
+            double num2 = Double.parseDouble(number2);
+            double result = 0;
+
+            switch (operation) {
+                case '+':
+                    result = num1 + num2;
+                    break;
+                case '-':
+                    result = num1 - num2;
+                    break;
+                case '*':
+                    result = num1 * num2;
+                    break;
+                case '/':
+                    if (num2 != 0) {
+                        result = num1 / num2;
+                    } else {
+                        resultData.setText("Ошибка");
+                        return;
+                    }
+                    break;
+
+            }
+
+            if (Double.isNaN(result)) {
+                resultData.setText("Ошибка");
+            }
+            else if (result % 1 == 0) {
+                resultData.setText(String.valueOf((int) result));
+            } else {
+                resultData.setText(String.valueOf(result));
+            }
+        }
+
+        catch (NumberFormatException e) {
+            resultData.setText("Ошибка");
+        }
+    }
+
+    private void clearAll() {
+        firstNumber.setText("");
+        secondNumber.setText("");
+        operationData.setText("~");
+        resultData.setText("0");
     }
 }
