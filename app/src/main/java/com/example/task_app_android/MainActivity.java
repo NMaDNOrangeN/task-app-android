@@ -2,11 +2,13 @@ package com.example.task_app_android;
 
 import android.graphics.Color;
 import android.os.Bundle;
+import android.view.Gravity;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -14,10 +16,10 @@ import androidx.core.view.WindowInsetsCompat;
 
 public class MainActivity extends AppCompatActivity {
 
-    private EditText firstNumber;
-    private EditText secondNumber;
-    private TextView operationData;
-    private TextView resultData;
+    private Button short_toastButton;
+    private Button long_toastButton;
+    private Button dialog_and_iconButton;
+    private Button multi_choice_dialogButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,17 +34,12 @@ public class MainActivity extends AppCompatActivity {
 
         TextView studentData = findViewById(R.id.textView1);
         TextView groupData = findViewById(R.id.textView2);
-        firstNumber = findViewById(R.id.editTextNumber1);
-        secondNumber = findViewById(R.id.editTextNumber2);
-        operationData = findViewById(R.id.textViewOperation);
-        TextView equalsData = findViewById(R.id.textViewEquals);
-        resultData = findViewById(R.id.textViewResult);
 
-        Button plusButton = findViewById(R.id.buttonPlus);
-        Button minusButton = findViewById(R.id.buttonMinus);
-        Button multiplyButton = findViewById(R.id.buttonMultiply);
-        Button divideButton = findViewById(R.id.buttonDivide);
-        Button clearButton = findViewById(R.id.buttonClear);
+        short_toastButton = findViewById(R.id.button1);
+        long_toastButton = findViewById(R.id.button2);
+        dialog_and_iconButton = findViewById(R.id.button3);
+        multi_choice_dialogButton = findViewById(R.id.button4);
+
 
         studentData.setText("Shabalin E.K.");
         studentData.setTextSize(20);
@@ -52,69 +49,100 @@ public class MainActivity extends AppCompatActivity {
         groupData.setTextSize(20);
         groupData.setTextColor(Color.RED);
 
-        plusButton.setOnClickListener(v -> calculate('+'));
-        minusButton.setOnClickListener(v -> calculate('-'));
-        multiplyButton.setOnClickListener(v -> calculate('*'));
-        divideButton.setOnClickListener(v -> calculate('/'));
-        clearButton.setOnClickListener(v -> clearAll());
+        short_toastButton.setOnClickListener(v -> short_toastShow());
+        long_toastButton.setOnClickListener(v -> long_toastShow());
+        dialog_and_iconButton.setOnClickListener(v -> dialog_and_iconShow());
+        multi_choice_dialogButton.setOnClickListener(v -> multi_choice_dialogShow());
+
     }
 
-    private void calculate(char operation) {
-        operationData.setText(String.valueOf(operation));
+    private void short_toastShow() {
+        Toast.makeText(this, "This toast is SHORT!", Toast.LENGTH_SHORT).show();
+    }
 
-        String number1 = firstNumber.getText().toString().trim();
-        String number2 = secondNumber.getText().toString().trim();
+    private void long_toastShow() {
+        Toast longToast = Toast.makeText(this, "This toast is LONG!!!", Toast.LENGTH_LONG);
+        longToast.setGravity(Gravity.TOP, 0, 150);
+        longToast.show();
+    }
 
-        if (number1.isEmpty() || number2.isEmpty()) {
-            resultData.setText("Ошибка");
-            return;
-        }
+    private void dialog_and_iconShow() {
+        CustomDialogFragment dialog_and_icon = new CustomDialogFragment();
+        dialog_and_icon.show(getSupportFragmentManager(), "dialog_and_icon");
+    }
 
-        try {
-            double num1 = Double.parseDouble(number1);
-            double num2 = Double.parseDouble(number2);
-            double result = 0;
+    public void makeButtonsTextRed() {
+        short_toastButton.setTextColor(Color.RED);
+        long_toastButton.setTextColor(Color.RED);
+        dialog_and_iconButton.setTextColor(Color.RED);
+        multi_choice_dialogButton.setTextColor(Color.RED);
+    }
 
-            switch (operation) {
-                case '+':
-                    result = num1 + num2;
+    private void multi_choice_dialogShow() {
+        final String[] calibers = {
+                ".308 Win",
+                ".223 Remington",
+                "7.62x39",
+                ".45 ACP",
+                ".338 Lapua Magnum",
+                "7.62x51",
+                ".300 BLK",
+                "12 gauge",
+                "277 Fury",
+                "5.7x28",
+                ".22LR",
+                "4.6x30",
+                "T65"
+        };
+
+        final  boolean[] trueAnswers = {
+                true,
+                false,
+                false,
+                false,
+                false,
+                true,
+                false,
+                false,
+                false,
+                false,
+                false,
+                false,
+                true
+        };
+
+        final boolean[] checkedAnswers = new boolean[calibers.length];
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Select the same calibers (with different names)");
+        builder.setMultiChoiceItems(calibers, checkedAnswers, (dialog, which, isChecked) -> {
+            checkedAnswers[which] = isChecked;
+        });
+
+        builder.setPositiveButton("OK", (dialog, which) -> {
+            boolean isCorrect = true;
+
+            for (int i = 0; i < calibers.length; i++) {
+                if (checkedAnswers[i] != trueAnswers[i]) {
+                    isCorrect = false;
                     break;
-                case '-':
-                    result = num1 - num2;
-                    break;
-                case '*':
-                    result = num1 * num2;
-                    break;
-                case '/':
-                    if (num2 != 0) {
-                        result = num1 / num2;
-                    } else {
-                        resultData.setText("Ошибка");
-                        return;
-                    }
-                    break;
-
+                }
             }
-
-            if (Double.isNaN(result)) {
-                resultData.setText("Ошибка");
-            }
-            else if (result % 1 == 0) {
-                resultData.setText(String.valueOf((int) result));
+            if (isCorrect) {
+                Toast.makeText(this, "You're right!", Toast.LENGTH_SHORT).show();
             } else {
-                resultData.setText(String.valueOf(result));
+                hideButtons();
             }
-        }
+        });
 
-        catch (NumberFormatException e) {
-            resultData.setText("Ошибка");
-        }
+        builder.setNegativeButton("Cancel", null);
+        builder.show();
     }
 
-    private void clearAll() {
-        firstNumber.setText("");
-        secondNumber.setText("");
-        operationData.setText("~");
-        resultData.setText("0");
+    private void hideButtons() {
+        short_toastButton.setVisibility(Button.INVISIBLE);
+        long_toastButton.setVisibility(Button.INVISIBLE);
+        dialog_and_iconButton.setVisibility(Button.INVISIBLE);
+        multi_choice_dialogButton.setVisibility(Button.INVISIBLE);
     }
 }
