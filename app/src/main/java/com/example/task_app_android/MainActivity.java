@@ -1,33 +1,30 @@
 package com.example.task_app_android;
 
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
+import android.Manifest;
+import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.ListView;
-import android.widget.SimpleAdapter;
-import android.widget.TextView;
-import android.widget.Toast;
 
+import android.view.View;
+import android.widget.Button;
+import android.widget.Toast;
+import android.widget.TextView;
+
+import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
-import java.util.ArrayList;
-import java.util.HashMap;
+import com.journeyapps.barcodescanner.ScanContract;
+import com.journeyapps.barcodescanner.ScanOptions;
 
 public class MainActivity extends AppCompatActivity {
-
-    private ListView listCategories;
-    private ListView listProducts;
-    private SQLiteDatabase database;
-
-    private final ArrayList<Integer> categoryIds = new ArrayList<>();
-    private int currentCategoryId = -1;
+    private Button buttonScan;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,6 +40,8 @@ public class MainActivity extends AppCompatActivity {
         TextView studentData = findViewById(R.id.textView1);
         TextView groupData = findViewById(R.id.textView2);
 
+        buttonScan = findViewById(R.id.buttonScan);
+
         studentData.setText("Shabalin E.K.");
         studentData.setTextSize(20);
         studentData.setTextColor(Color.GRAY);
@@ -51,67 +50,77 @@ public class MainActivity extends AppCompatActivity {
         groupData.setTextSize(20);
         groupData.setTextColor(Color.RED);
 
-        listCategories = findViewById(R.id.listCategories);
-        listProducts = findViewById(R.id.listProducts);
-        Button buttonRefresh = findViewById(R.id.buttonRefresh);
-
-        DBHelper helper = new DBHelper(this);
-        database = helper.getReadableDatabase();
-
-        loadCategories();
-
-        listCategories.setOnItemClickListener((parent, view, position, id) ->
-                showProducts(categoryIds.get(position)));
-
-        buttonRefresh.setOnClickListener(v -> {
-            loadCategories();
-            if (currentCategoryId != -1) {
-                showProducts(currentCategoryId);
+        buttonScan.setOnClickListener(v -> {
+            if (ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(MainActivity.this, new String[]{
+                        Manifest.permission.CAMERA
+                }, 100);
+            } else {
+                startScan();
             }
-            Toast.makeText(this, "Data refreshed", Toast.LENGTH_SHORT).show();
         });
     }
 
-    private void loadCategories() {
-        categoryIds.clear();
-        ArrayList<String> names = new ArrayList<>();
-
-        Cursor cursor = database.rawQuery("SELECT id, name FROM categories", null);
-        while (cursor.moveToNext()) {
-            categoryIds.add(cursor.getInt(0));
-            names.add(cursor.getString(1));
+    ActivityResultLauncher<ScanOptions> barLauncher = registerForActivityResult(new ScanContract(), result -> {
+        if (result.getContents() != null) {
+            openResult(result.getContents());
         }
-        cursor.close();
+    });
 
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(
-                this, android.R.layout.simple_list_item_1, names);
-        listCategories.setAdapter(adapter);
+    private void startScan() {
+        ScanOptions options = new ScanOptions();
+        options.setPrompt("Point the camera at the QR-code");
+        options.setBeepEnabled(true);
+        options.setOrientationLocked(true);
+        options.setCaptureActivity(CaptureAct.class);
+        barLauncher.launch(options);
     }
 
-    private void showProducts(int categoryId) {
-        currentCategoryId = categoryId;
-
-        ArrayList<HashMap<String, String>> goods = new ArrayList<>();
-
-        Cursor cursor = database.rawQuery(
-                "SELECT name, description, price FROM goods WHERE category_id = ?",
-                new String[]{String.valueOf(categoryId)});
-
-        while (cursor.moveToNext()) {
-            HashMap<String, String> item = new HashMap<>();
-            item.put("name", cursor.getString(0));
-            item.put("description", cursor.getString(1));
-            item.put("price", cursor.getInt(2) + " ₽");
-            goods.add(item);
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == 100 && grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            startScan();
         }
-        cursor.close();
+        else {
+            Toast.makeText(this, "Needs camera permission", Toast.LENGTH_SHORT).show();
+        }
+    }
 
-        SimpleAdapter adapter = new SimpleAdapter(
-                this,
-                goods,
-                R.layout.listview_item,
-                new String[]{"name", "description", "price"},
-                new int[]{R.id.textName, R.id.textDescription, R.id.textPrice});
-        listProducts.setAdapter(adapter);
+    private void openResult(String content) {
+        String text = content.trim().toLowerCase();
+        String title;
+        int image;
+
+        switch (text) {
+            case "house":
+                title = "House";
+                image = R.drawable.house;
+                break;
+            case "dog":
+                title = "Dog";
+                image = R.drawable.dog;
+                break;
+            case "cat":
+                title = "Cat";
+                image = R.drawable.cat;
+                break;
+            case "car":
+                title = "Car";
+                image = R.drawable.car;
+                break;
+            case "gun":
+                title = "Gun";
+                image = R.drawable.gun;
+                break;
+            default:
+                Toast.makeText(this, "Unknown code: " + content, Toast.LENGTH_LONG).show();
+                return;
+        }
+
+        Intent intent = new Intent(this, ResultActivity.class);
+        intent.putExtra("title", title);
+        intent.putExtra("image", image);
+        startActivity(intent);
     }
 }
